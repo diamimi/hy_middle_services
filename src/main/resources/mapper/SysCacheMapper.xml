@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sioo.db.mybatis.mapper.SysCacheMapper">
+    <select id="findAllUserBlackMobile" resultType="java.util.HashMap">
+	 SELECT DISTINCT md FROM smshy.user_black_mobile
+	</select>
+
+    <select id="findUserBlackMobile" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        SELECT uid,md FROM smshy.user_black_mobile
+        <where>
+            <if test="uid != null and uid != 0">
+                uid = #{uid,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+    <select id="findUserWhiteMobile" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        SELECT uid,md FROM smshy.user_white_mobile
+        <where>
+            <if test="uid != null and uid != 0">
+                uid = #{uid,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+    <select id="findSmsWordsUser" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        SELECT uid,words,`type` FROM smshy.sms_words_user
+        <where>
+            <if test="uid != null and uid != 0">
+                uid = #{uid,jdbcType=INTEGER}
+            </if>
+            <if test="type != null and type != 0">
+                and `type` = #{type,jdbcType=INTEGER}
+            </if>
+        </where>
+        ORDER BY uid
+    </select>
+
+    <select id="findSmsWordsChannel" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        SELECT channel,words FROM smshy.sms_words_channel
+        <where>
+            <if test="channel != null and channel != 0">
+                channel = #{channel,jdbcType=INTEGER}
+            </if>
+        </where>
+        ORDER BY channel
+    </select>
+
+    <select id="findSmsUserByUid" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        SELECT 
+        	id,username,pwd,dpwd,phone,unicom,telecom,mobile,sms,stat,isRelease,proxyip,replyn,repeatfilter,expidSign,signPosition,userkind,usertype,repeatFilter,repeatNum,childFun,releaseNum,blackAll,repeatSign,repeatSignNum 
+        FROM
+			smshy.sms_user
+		LEFT JOIN smshy.sms_user_control ON smshy.sms_user.id = smshy.sms_user_control.uid
+        WHERE smshy.sms_user.id = #{uid,jdbcType=INTEGER}
+    </select>
+
+    <select id="findSmsUser" resultType="java.util.HashMap">
+        SELECT 
+        	id,username,pwd,dpwd,phone,unicom,telecom,mobile,sms,stat,isRelease,proxyip,replyn,repeatfilter,expidSign,signPosition,userkind,usertype,repeatFilter,repeatNum,childFun,releaseNum,blackAll,repeatSign,repeatSignNum  
+        FROM
+			smshy.sms_user
+		LEFT JOIN smshy.sms_user_control ON smshy.sms_user.id = smshy.sms_user_control.uid
+    </select>
+
+    <select id="findUid" resultType="java.lang.Integer">
+        SELECT id FROM smshy.sms_user
+        <where>
+            <if test="child == 1">
+                <if test="uid != null and uid != 0">
+                    parentId= #{uid,jdbcType=INTEGER}
+                </if>
+            </if>
+            <if test="child == null or child == 0">
+                <if test="uid != null and uid != 0">
+                    id = #{uid,jdbcType=INTEGER}
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <select id="findSmsUserControl" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        SELECT releasenum FROM smshy.sms_user_control
+        <where>
+            <if test="uid != null and uid != 0">
+                uid = #{uid,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+    <select id="findSmsChannel" resultType="java.util.HashMap">
+       SELECT id, local_rate, channel_name, support_network, send_words_len, send_words_maxlen, record_type, route_type, route_require, route_channel, sign_position, status, is_group, is_signs FROM smshy.gateway_channel
+    </select>
+
+    <select id="findSmsChannelById" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        SELECT id, local_rate, channel_name, support_network, send_words_len, send_words_maxlen, record_type,
+        route_type, route_require, route_channel, sign_position, status, is_group, is_signs FROM smshy.gateway_channel
+        <where>
+            <if test="channelId != null and channelId != 0">
+                id = #{channelId,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+    <select id="findSmsUserAlert" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        SELECT mobile,num,uid FROM smshy.sms_user_alert
+        <where>
+            <if test="uid != null and uid != 0">
+                uid = #{uid,jdbcType=INTEGER}
+            </if>
+        </where>
+        order by uid
+    </select>
+
+    <select id="findSmsSignChannelBlack" resultType="java.util.HashMap">
+        SELECT id,uid,channel,store FROM smshy.sms_sign_channel_black
+        <where>
+            <if test="uid != null and uid != 0">
+                AND uid = #{uid,jdbcType=INTEGER}
+            </if>
+            <if test="store != null and store != ''">
+                AND store = #{store,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by uid
+    </select>
+
+    <select id="findUserWhiteSign" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        SELECT id,uid,sign FROM smshy.user_white_sign
+        <where>
+            <if test="uid != null and uid != 0">
+                uid = #{uid,jdbcType=INTEGER}
+            </if>
+        </where>
+        order by uid
+    </select>
+
+    <select id="findSmsUserSendModel" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        SELECT id,uid,content as templet FROM smshy.sms_user_send_model
+        <where>
+            <if test="uid != null and uid != 0">
+                uid = #{uid,jdbcType=INTEGER}
+            </if>
+        </where>
+        order by uid
+    </select>
+
+    <select id="findSmsUserRoute" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        SELECT id,uid,content,routechannel,mtype,contentType,province,city FROM smshy.sms_user_route
+        <where>
+            <if test="uid != null and uid != 0">
+                uid = #{uid,jdbcType=INTEGER}
+            </if>
+        </where>
+        order by uid
+    </select>
+
+    <select id="findSmsUserStrategyRelation" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        SELECT id,uid,group_id,type FROM smshy.sms_user_strategy_relation
+        <where>
+            <if test="uid != null and uid != 0">
+                uid = #{uid,jdbcType=INTEGER}
+            </if>
+        </where>
+        order by uid
+    </select>
+
+
+    <select id="findSmsStrategyGroup" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+		SELECT id,type FROM smshy.sms_strategy_group ORDER BY type
+	</select>
+
+    <select id="findStrategyGourp" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        <if test="type == null or type == 0">
+            SELECT 1
+        </if>
+        <if test="type == 1">
+            SELECT
+            id,words,group_id,screenType
+            FROM
+            smshy.sms_black_words
+            WHERE
+            EXISTS (SELECT 1 FROM smshy.sms_strategy_group WHERE sms_strategy_group.id = sms_black_words.group_id AND
+            sms_strategy_group.type = 1)
+            ORDER BY group_id
+        </if>
+        <if test="type == 2">
+            SELECT
+            id,words,group_id,screenType
+            FROM
+            smshy.sms_black_words
+            WHERE
+            EXISTS (SELECT 1 FROM smshy.sms_strategy_group WHERE sms_strategy_group.id = sms_black_words.group_id AND
+            sms_strategy_group.type = 2)
+            ORDER BY group_id
+        </if>
+        <if test="type == 3">
+            SELECT id,mobile,group_id FROM smshy.sms_black_mobile ORDER BY group_id
+        </if>
+
+        <if test="type == 5">
+            SELECT id,mobile,group_id FROM smshy.sms_white_mobile ORDER BY group_id
+        </if>
+        <if test="type == 6">
+            SELECT id,sign,group_id FROM smshy.sms_white_sign ORDER BY group_id
+        </if>
+        <if test="type == 7">
+            SELECT id,sign,group_id FROM smshy.sms_black_sign ORDER BY group_id
+        </if>
+    </select>
+
+    <select id="findChannelGourp" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        SELECT group_channel_id, channel_id, priority FROM smshy.sms_channel_group
+        <where>
+            <if test="channel != null and channel != 0">
+                group_channel_id = #{channel,jdbcType=INTEGER}
+            </if>
+        </where>
+        ORDER BY group_channel_id,priority desc
+    </select>
+
+    <select id="findSmsMobileArea" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        SELECT id, number, province, city, citycode, type, typedesc, provincecode FROM smshy.sms_mobile_area
+        <where>
+            <if test="provincecode != null and provincecode != 0">
+                provincecode = #{provincecode,jdbcType=INTEGER}
+            </if>
+            <if test="citycode != null">
+                citycode = #{citycode,jdbcType=INTEGER}
+            </if>
+        </where>
+        order by provincecode
+    </select>
+
+    <select id="findSmsMobileAreaById" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        SELECT id, number, province, city, citycode, type, typedesc, provincecode FROM smshy.sms_mobile_area
+        <where>
+            <if test="id != null and id != 0">
+                id = #{id,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+    <select id="findSmsBlackArea" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        select id, provincecode, citycode, uid, addtime from smshy.sms_black_area where type=0
+        <if test="uid != null and uid != 0">
+            and uid = #{uid,jdbcType=INTEGER}
+        </if>
+        order by uid
+    </select>
+
+    <select id="findSmsBlackAreaByChannel" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        select id, provincecode, citycode, channel_id, route_channel, addtime from smshy.sms_black_area where type=1
+        <if test="channelId != null and channelId != 0">
+            and channel_id = #{channelId,jdbcType=INTEGER}
+        </if>
+        order by channel_id
+    </select>
+
+    <select id="findSysConfig" resultType="java.lang.Integer">
+    	select syspause from smshy.sys_config  
+    </select>
+
+    <select id="findSmsRptRatioConfig" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        select uid, rate, defalt from smshy.sms_rpt_ratio_config
+        <where>
+            <if test="uid != null and uid != 0">
+                and uid = #{uid,jdbcType=INTEGER}
+            </if>
+        </where>
+        order by uid
+    </select>
+
+    <select id="findReleaseTemplate" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+        SELECT uid,content,type,effectivetime FROM smshy.sms_release_template
+        where stat = 0 and (type = 0 or (type=1 and effectivetime>(NOW() + 0)))
+        <if test="uid != null and uid != 0">
+            and uid = #{uid,jdbcType=INTEGER}
+        </if>
+        order by uid
+    </select>
+</mapper>

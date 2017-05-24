@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sioo.db.mybatis.mapper.SmsUserMapper">
+    <update id="updateSmsUser" parameterType="java.util.List">
+    	UPDATE smshy.sms_user SET 
+			send=send+(case id  
+				<foreach collection="list" item="item" index="index">
+				when #{item.uid,jdbcType=INTEGER} then #{item.sms,jdbcType=INTEGER}
+				</foreach>
+				else 0
+				end), 
+			sms=sms-(case id  
+				<foreach collection="list" item="item" index="index">
+				when #{item.uid,jdbcType=INTEGER} then #{item.sms,jdbcType=INTEGER}
+				</foreach>
+				else 0
+				end)
+		WHERE id in 
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+        #{item.uid,jdbcType=INTEGER}
+    	</foreach>
+    </update>
+    
+    <insert id="saveSmsUserConsume" parameterType="java.util.List"> 
+    	<selectKey keyColumn="id" resultType="java.lang.Integer" order="AFTER">
+	        select @@IDENTITY
+	    </selectKey>
+	    INSERT INTO smshy.sms_user_consume (uid,send,date,utype) 
+	    <foreach collection="list" item="item" index="index"  separator=" UNION ALL " >
+		select #{item.uid,jdbcType=INTEGER},0,#{item.date,jdbcType=BIGINT},1 from dual 
+		where not exists(select 1 from smshy.sms_user_consume where uid=#{item.uid,jdbcType=INTEGER} and date=#{item.date,jdbcType=BIGINT})
+		</foreach>
+    </insert>
+    
+    <update id="updateSmsUserConsume"> 
+    	UPDATE smshy.sms_user_consume SET 
+    		send=send+(
+    			case 
+	    		<foreach collection="list" item="item" index="index">
+	    			when uid = #{item.uid,jdbcType=INTEGER} and date = #{item.date,jdbcType=BIGINT} then #{item.kousms,jdbcType=INTEGER}
+	    		</foreach> 
+	    		else 0 
+	    		end)
+    	where 
+    	date = #{date,jdbcType=BIGINT} 
+    	and uid in 
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+        #{item.uid,jdbcType=INTEGER}
+    	</foreach>
+    </update>
+    
+    <update id="updateSmsUserConsumeUnKou"> 
+    	UPDATE smshy.sms_user_consume SET 
+    		unsend=unsend+(
+    			case 
+	    		<foreach collection="list" item="item" index="index">
+	    			when uid = #{item.uid,jdbcType=INTEGER} and date = #{item.date,jdbcType=BIGINT} then #{item.unkousms,jdbcType=INTEGER}
+	    		</foreach> 
+	    		else 0 
+	    		end)
+    	where 
+    	date = #{date,jdbcType=BIGINT} 
+    	and uid in 
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+        #{item.uid,jdbcType=INTEGER}
+    	</foreach>
+    </update>
+    
+    <select id="findSmsUserById" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+    	SELECT sms,username,dpwd FROM smshy.sms_user WHERE id=#{id,jdbcType=INTEGER}
+    </select>
+    
+    <select id="findSmsUserControlById" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+    	SELECT uid FROM smshy.sms_user_control WHERE uid=#{uid,jdbcType=INTEGER}
+    </select>
+    
+    <select id="findSmsUserReleaseNum" parameterType="java.lang.Integer"  resultType="java.lang.Integer">
+    	SELECT releaseNum FROM smshy.sms_user_control WHERE uid=#{uid,jdbcType=INTEGER}
+    </select>
+    
+    <insert id="saveUser">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT @@IDENTITY
+        </selectKey>
+        insert into smshy.sms_user
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null and id > 0">
+                id,
+            </if>
+            <if test="pwd != null and pwd != ''">
+                pwd,
+            </if>
+            <if test="dpwd != null and dpwd != ''">
+                dpwd,
+            </if>
+            <if test="company != null and company != ''">
+                company,
+            </if>
+            <if test="phone != null and phone != ''">
+                phone,
+            </if>
+            <if test="tel != null and tel != ''">
+                tel,
+            </if>
+            <if test="mail != null and mail !=''">
+                mail,
+            </if>
+            <if test="linkman != null and linkman !=''">
+                linkman,
+            </if>
+            <if test="address != null and address !=''">
+                address,
+            </if>
+            <if test="sales != null and sales !=''">
+                sales,
+            </if>
+            <if test="discount != null and discount>0">
+                discount,
+            </if>
+            <if test="price != null and price >0">
+                price,
+            </if>
+            <if test="send != null">
+                send,
+            </if>
+            <if test="send_ok != null">
+                send_ok,
+            </if>
+            <if test="time != null and time !=''">
+                time,
+            </if>
+            <if test="add_uid != null and add_uid !=''">
+                add_uid,
+            </if>
+            <if test="stat != null">
+                stat,
+            </if>
+            <if test="sms != null">
+                sms,
+            </if>
+            <if test="priority != null">
+                priority,
+            </if>
+            <if test="logintime != null">
+                logintime,
+            </if>
+            <if test="loginip != null and loginip !=''">
+                loginip,
+            </if>
+            <if test="qq != null and qq !=''">
+                qq,
+            </if>
+            <if test="remark != null and remark !=''">
+                remark,
+            </if>
+            <if test="userkind != null">
+                userkind,
+            </if>
+            <if test="kefu != null and kefu !=''">
+                kefu,
+            </if>
+            <if test="username != null and username !=''">
+                username,
+            </if>
+            <if test="submittype != null">
+                submittype,
+            </if>
+            <if test="parentId != null">
+                parentId,
+            </if>
+            <if test="hytype != null">
+                hyType,
+            </if>
+            <if test="customerId != null">
+                customer_id,
+            </if>
+            <if test="usertype != null">
+                usertype,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null and id > 0">
+                #{id},
+            </if>
+            <if test="pwd != null and pwd != ''">
+                #{pwd},
+            </if>
+            <if test="dpwd != null and dpwd != ''">
+                #{dpwd},
+            </if>
+            <if test="company != null and company != ''">
+                #{company},
+            </if>
+            <if test="phone != null and phone != ''">
+                #{phone},
+            </if>
+            <if test="tel != null and tel != ''">
+                #{tel},
+            </if>
+            <if test="mail != null and mail !=''">
+                #{mail},
+            </if>
+            <if test="linkman != null and linkman !=''">
+                #{linkman},
+            </if>
+            <if test="address != null and address !=''">
+                #{address},
+            </if>
+            <if test="sales != null and sales !=''">
+                #{sales},
+            </if>
+            <if test="discount != null and discount >0">
+                #{discount},
+            </if>
+            <if test="price != null and price >0">
+                #{price},
+            </if>
+            <if test="send != null">
+                #{send},
+            </if>
+            <if test="send_ok != null">
+                #{send_ok},
+            </if>
+            <if test="time != null and time !=''">
+                #{time},
+            </if>
+            <if test="add_uid != null and add_uid !=''">
+                #{add_uid},
+            </if>
+            <if test="stat != null">
+                #{stat},
+            </if>
+            <if test="sms != null">
+                #{sms},
+            </if>
+            <if test="priority != null">
+                #{priority},
+            </if>
+            <if test="logintime != null">
+                #{logintime},
+            </if>
+            <if test="loginip != null and loginip !=''">
+                #{loginip},
+            </if>
+            <if test="qq != null and qq !=''">
+                #{qq},
+            </if>
+            <if test="remark != null and remark != ''">
+                #{remark},
+            </if>
+            <if test="userkind != null">
+                #{userkind},
+            </if>
+            <if test="kefu != null and kefu !=''">
+                #{kefu},
+            </if>
+            <if test="username != null and username !=''">
+                #{username},
+            </if>
+            <if test="submittype != null">
+                #{submittype},
+            </if>
+            <if test="parentId != null">
+                #{parentId},
+            </if>
+            <if test="hytype != null">
+                #{hytype},
+            </if>
+            <if test="customerId != null">
+                #{customerId},
+            </if>
+            <if test="usertype != null">
+                #{usertype},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateUser">
+        update smshy.sms_user
+        <set>
+            <if test="pwd != null and pwd != ''">
+                pwd=#{pwd},
+            </if>
+            <if test="dpwd != null and dpwd != ''">
+                dpwd=#{dpwd},
+            </if>
+            <if test="company != null and company != ''">
+                company=#{company},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone=#{phone},
+            </if>
+            <if test="tel != null and tel != ''">
+                tel= #{tel},
+            </if>
+            <if test="mail != null and mail !=''">
+                mail=#{mail},
+            </if>
+            <if test="linkman != null and linkman !=''">
+                linkman= #{linkman},
+            </if>
+            <if test="address != null and address !=''">
+                address=#{address},
+            </if>
+            <if test="sales != null and sales !=''">
+                sales=#{sales},
+            </if>
+            <if test="discount != null and discount !=''">
+                discount=#{discount},
+            </if>
+            <if test="price != null">
+                price=#{price},
+            </if>
+            <if test="send != null">
+                send=#{send},
+            </if>
+            <if test="send_ok != null ">
+                send_ok=#{send_ok},
+            </if>
+            <if test="time != null and time !=''">
+                time=#{time},
+            </if>
+            <if test="add_uid != null and add_uid !=''">
+                add_uid=#{add_uid},
+            </if>
+            <if test="stat != null">
+                stat=#{stat},
+            </if>
+            <if test="sms != null">
+                sms=#{sms},
+            </if>
+            <if test="priority != null">
+                priority=#{priority},
+            </if>
+            <if test="logintime != null">
+                logintime=#{logintime},
+            </if>
+            <if test="loginip != null and loginip !=''">
+                loginip=#{loginip},
+            </if>
+            <if test="qq != null and qq !=''">
+                qq=#{qq},
+            </if>
+            <if test="remark != null">
+                remark=#{remark},
+            </if>
+            <if test="userkind != null">
+                userkind=#{userkind},
+            </if>
+            <if test="kefu != null and kefu !=''">
+                kefu=#{kefu},
+            </if>
+            <if test="username != null and username !=''">
+                username=#{username},
+            </if>
+            <if test="submittype != null and submittype !=''">
+                submittype=#{submittype},
+            </if>
+            <if test="parentId != null">
+                parentId=#{parentId},
+            </if>
+            <if test="hytype != null">
+                hyType=#{hytype},
+            </if>
+            <if test="customerId != null">
+                customer_id = #{customerId},
+            </if>
+            <if test="usertype != null">
+                usertype = #{usertype},
+            </if>
+        </set>
+          where id = #{id}
+    </update>
+    
+    <insert id="saveUserControl">
+        insert into smshy.sms_user_control
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="uid != null">
+                uid,
+            </if>
+            <if test="isShowRpt != null">
+                isShowRpt,
+            </if>
+            <if test="childFun != null">
+                childFun,
+            </if>
+            <if test="childNum != null">
+                childNum,
+            </if>
+            <if test="isRelease != null">
+                isRelease,
+            </if>
+            <if test="releaseNum != null">
+                releaseNum,
+            </if>
+            <if test="replyn != null">
+                replyn,
+            </if>
+            <if test="repeatFilter != null">
+                repeatFilter,
+            </if>
+            <if test="repeatNum != null">
+                repeatNum,
+            </if>
+            <if test="signPosition != null">
+                signPosition,
+            </if>
+            <if test="expidSign != null">
+                expidSign,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="unicom != null">
+                unicom,
+            </if>
+            <if test="telecom != null">
+                telecom,
+            </if>
+            <if test="proxyIp != null and proxyIp != ''">
+                proxyIp,
+            </if>
+            <if test="speed != null">
+                speed,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+        	<if test="uid != null">
+                #{uid,jdbcType=INTEGER},
+            </if>
+            <if test="isShowRpt != null">
+                #{isShowRpt,jdbcType=INTEGER},
+            </if>
+            <if test="childFun != null">
+                #{childFun,jdbcType=INTEGER},
+            </if>
+            <if test="childNum != null">
+                #{childNum,jdbcType=INTEGER},
+            </if>
+            <if test="isRelease != null">
+                #{isRelease,jdbcType=INTEGER},
+            </if>
+            <if test="releaseNum != null">
+                #{releaseNum,jdbcType=INTEGER},
+            </if>
+            <if test="replyn != null">
+                #{replyn,jdbcType=INTEGER},
+            </if>
+            <if test="repeatFilter != null">
+                #{repeatFilter,jdbcType=INTEGER},
+            </if>
+            <if test="repeatNum != null">
+                #{repeatNum,jdbcType=INTEGER},
+            </if>
+            <if test="signPosition != null">
+                #{signPosition,jdbcType=INTEGER},
+            </if>
+            <if test="expidSign != null">
+                #{expidSign,jdbcType=INTEGER},
+            </if>
+            <if test="mobile != null">
+                #{mobile,jdbcType=INTEGER},
+            </if>
+            <if test="unicom != null">
+                #{unicom,jdbcType=INTEGER},
+            </if>
+            <if test="telecom != null">
+                #{telecom,jdbcType=INTEGER},
+            </if>
+            <if test="proxyIp != null and proxyIp != ''">
+                #{proxyIp,jdbcType=VARCHAR},
+            </if>
+            <if test="speed != null">
+                #{speed,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateUserControl">
+        update smshy.sms_user_control
+        <set>
+            <if test="isShowRpt != null">
+                isShowRpt = #{isShowRpt,jdbcType=INTEGER},
+            </if>
+            <if test="childFun != null">
+                childFun = #{childFun,jdbcType=INTEGER},
+            </if>
+            <if test="childNum != null">
+                childNum = #{childNum,jdbcType=INTEGER},
+            </if>
+            <if test="isRelease != null">
+                isRelease = #{isRelease,jdbcType=INTEGER},
+            </if>
+            <if test="releaseNum != null">
+                releaseNum = #{releaseNum,jdbcType=INTEGER},
+            </if>
+            <if test="replyn != null">
+                replyn = #{replyn,jdbcType=INTEGER},
+            </if>
+            <if test="repeatFilter != null">
+                repeatFilter = #{repeatFilter,jdbcType=INTEGER},
+            </if>
+            <if test="repeatNum != null">
+                repeatNum = #{repeatNum,jdbcType=INTEGER},
+            </if>
+            <if test="signPosition != null">
+                signPosition = #{signPosition,jdbcType=INTEGER},
+            </if>
+            <if test="expidSign != null">
+                expidSign = #{expidSign,jdbcType=INTEGER},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile,jdbcType=INTEGER},
+            </if>
+            <if test="unicom != null">
+                unicom = #{unicom,jdbcType=INTEGER},
+            </if>
+            <if test="telecom != null">
+                telecom = #{telecom,jdbcType=INTEGER},
+            </if>
+            <if test="proxyIp != null and proxyIp != ''">
+                proxyIp = trim(#{proxyIp,jdbcType=VARCHAR}),
+            </if>
+             <if test="speed != null">
+                speed = #{speed,jdbcType=INTEGER},
+            </if>
+        </set>
+        where uid = #{uid,jdbcType=INTEGER}
+    </update>
+</mapper>

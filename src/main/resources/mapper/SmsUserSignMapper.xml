@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sioo.db.mybatis.mapper.SmsUserSignMapper">
+	<select id="findUserSignByUidAndStore" resultType="com.sioo.service.model.UserSign">
+   		SELECT id,uid,expend,expend2,userexpend,channel,store,`status`,addtime,type FROM smshy.sms_user_signstore
+    	<where>
+    		<if test="type != null and type != 0">
+       			AND type = #{type,jdbcType=INTEGER}
+     		</if>
+       		<if test="uid != null and uid != 0">
+       			AND uid = #{uid,jdbcType=INTEGER}
+     		</if>
+     		<if test="store != null and store != ''">
+       			AND	store = #{store,jdbcType=VARCHAR}
+     		</if>
+        </where> 
+        order by uid
+    </select>
+    
+    <select id="findMaxExpend2"  resultType="java.lang.String">
+        SELECT  max(expend2) FROM smshy.sms_user_signstore where type = 2
+    </select>
+    
+    <select id="findUserSignByExpends" resultType="com.sioo.service.model.UserSign">
+   		SELECT id,uid,expend,expend2,userexpend,channel,store,`status`,addtime,type FROM smshy.sms_user_signstore
+     	<if test="expends != null and expends != ''">
+       		WHERE expend in ( #{expends,jdbcType=VARCHAR})
+     	</if>
+        order by uid
+    </select>
+    
+    <insert id="insertUserSign" parameterType="com.sioo.service.model.UserSign">
+    <selectKey keyColumn="id" resultType="java.lang.Integer" order="AFTER">
+        select @@IDENTITY
+    </selectKey>
+    insert into smshy.sms_user_signstore
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="store != null">
+        store,
+      </if>
+      <if test="expend != null">
+        expend,
+      </if>
+      <if test="expend2 != null">
+        expend2,
+      </if>
+      <if test="expendqd != null">
+        expendqd,
+      </if>
+      <if test="userexpend != null">
+        userexpend,
+      </if>
+      <if test="addtime != null">
+        addtime,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="channel != null">
+        channel,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="userstat != null">
+        userstat,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="uid != null">
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="store != null">
+        #{store,jdbcType=VARCHAR},
+      </if>
+      <if test="expend != null">
+        #{expend,jdbcType=VARCHAR},
+      </if>
+      <if test="expend2 != null">
+        #{expend2,jdbcType=VARCHAR},
+      </if>
+      <if test="expendqd != null">
+        #{expendqd,jdbcType=VARCHAR},
+      </if>
+      <if test="userexpend != null">
+        #{userexpend,jdbcType=VARCHAR},
+      </if>
+      <if test="addtime != null">
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="channel != null">
+        #{channel,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="userstat != null">
+        #{userstat,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateUserSign">
+  	update smshy.sms_user_signstore set store = #{store,jdbcType=VARCHAR} where uid = #{uid,jdbcType=INTEGER} and expend = #{expend,jdbcType=VARCHAR}
+  </update>
+</mapper>

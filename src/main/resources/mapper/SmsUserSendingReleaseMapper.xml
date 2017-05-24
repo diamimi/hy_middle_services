@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sioo.db.mybatis.mapper.SmsUserSendingReleaseMapper">
+    <insert id="batchSave" parameterType="java.util.List">
+    <selectKey keyColumn="id" resultType="java.lang.Integer" order="AFTER">
+        select @@IDENTITY
+    </selectKey>
+    insert into smshy.sms_user_sending_release(`mtype`, `senddate`,`uid`, `mobile`, `channel`, `content`, `content_num`, `stat`, `release`, `pid`,
+  `grade`, `expid`, `remark`, `hisids`, `mdstr`, `handstat`, `location`,`screenType`)
+    values  
+    <foreach collection="list" item="item" index="index" separator="," >  
+    ( #{item.mtype},#{item.senddate},#{item.uid},#{item.mobile},#{item.channel},#{item.content},#{item.contentNum},#{item.stat},#{item.release},#{item.pid},
+    #{item.grade},#{item.expid},#{item.mtStat},#{item.id},#{item.mdstr},0,#{item.location},#{item.screenType})
+    </foreach>
+  </insert>
+  
+    <select id="getSmsUserSendingRelease" resultType="com.sioo.hy.cmpp.vo.SendingVo">
+    select `id`, `mtype`, `senddate`,`uid`, `mobile`, `channel`, `content`, `content_num` as contentNum, `stat`, `release`, `pid`,
+  	`grade`, `expid`, `remark` as mtStat, `hisids`, `mdstr`, `handstat` as handStat, `location` from smshy.sms_user_sending_release 
+  	where `handstat` = 1 or `handstat` = 2  
+  	order by `handstat` limit 1000
+    </select>
+    
+    <delete id="deleteByIds">
+    delete from smshy.sms_user_sending_release where id in(
+    <foreach collection="list" item="item" index="index" separator="," >  
+    #{item}
+    </foreach>
+    )
+    </delete>
+</mapper>

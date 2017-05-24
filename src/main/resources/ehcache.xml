@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache>
+    <!--timeToIdleSeconds 当缓存闲置n秒后销毁 -->
+    <!--timeToLiveSeconds 当缓存存活n秒后销毁 -->
+     <diskStore path="../ehcache" />
+<defaultCache
+  maxElementsInMemory="500"
+  eternal="true"
+  diskPersistent="false"
+  overflowToDisk="true" />
+    <cache name="sms" maxElementsInMemory="10000000"  eternal="true"  diskPersistent="true" overflowToDisk="true">
+            <BootstrapCacheLoaderFactory class="net.sf.ehcache.store.DiskStoreBootstrapCacheLoaderFactory" properties="bootstrapAsynchronously=true" />
+    </cache>
+
+    <cache name="group" maxElementsInMemory="10000000"  eternal="true"  diskPersistent="true" overflowToDisk="true">
+            <BootstrapCacheLoaderFactory class="net.sf.ehcache.store.DiskStoreBootstrapCacheLoaderFactory" properties="bootstrapAsynchronously=true" />
+    </cache>
+
+    <cache name="repeat" maxElementsInMemory="10000000"  eternal="true"  diskPersistent="true" overflowToDisk="true">
+        <BootstrapCacheLoaderFactory class="net.sf.ehcache.store.DiskStoreBootstrapCacheLoaderFactory" properties="bootstrapAsynchronously=true" />
+    </cache>
+
+</ehcache>
