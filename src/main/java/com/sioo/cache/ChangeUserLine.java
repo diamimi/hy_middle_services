@@ -17,6 +17,7 @@ import java.util.Map;
  * 切换用户线路,同步余额
  */
 public class ChangeUserLine {
+    int a=0;
 
     private static HttpClient client = null;
 
